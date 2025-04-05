@@ -36,11 +36,19 @@ async fn main() {
 
     // Initialize the app state with a post fetcher
 
+    let post_fetcher_type =
+        std::env::var("POST_FETCHER_TYPE").unwrap_or_else(|_| "github".to_string());
+
+    let post_fetcher = match post_fetcher_type.as_str() {
+        "github" => PostFetcher::Github(GithubPostFetcher::new("noah-guillory", "blog-posts")),
+        "filesystem" => PostFetcher::FileSystem(posts::filesystem::FileSystemPostFetcher::new(
+            "/Users/noah/Projects/blog-posts",
+        )),
+        _ => panic!("Invalid POST_FETCHER_TYPE. Use 'github' or 'filesystem'."),
+    };
+
     let app_state = AppState {
-        post_fetcher: PostFetcher::Github(GithubPostFetcher::new("noah-guillory", "blog-posts")),
-        // post_fetcher: PostFetcher::FileSystem(posts::filesystem::FileSystemPostFetcher::new(
-        //     "/Users/noah/Projects/blog-posts",
-        // )),
+        post_fetcher: post_fetcher,
     };
 
     // Build the application with a route
