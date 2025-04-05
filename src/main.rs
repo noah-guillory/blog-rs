@@ -1,6 +1,6 @@
 use axum::{Router, extract::MatchedPath, http::Request, routing::get};
 use handlers::post_handler;
-use posts::fetcher::GithubPostFetcher;
+use posts::{fetcher::PostFetcher, github::GithubPostFetcher};
 use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
 use tracing::info_span;
@@ -13,7 +13,7 @@ use crate::handlers::index_handler;
 
 #[derive(Clone)]
 struct AppState {
-    post_fetcher: GithubPostFetcher<'static>,
+    post_fetcher: PostFetcher,
 }
 
 #[tokio::main]
@@ -37,7 +37,10 @@ async fn main() {
     // Initialize the app state with a post fetcher
 
     let app_state = AppState {
-        post_fetcher: GithubPostFetcher::new("noah-guillory", "blog-posts"),
+        post_fetcher: PostFetcher::Github(GithubPostFetcher::new("noah-guillory", "blog-posts")),
+        // post_fetcher: PostFetcher::FileSystem(posts::filesystem::FileSystemPostFetcher::new(
+        //     "/Users/noah/Projects/blog-posts",
+        // )),
     };
 
     // Build the application with a route

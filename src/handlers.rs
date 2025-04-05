@@ -4,7 +4,7 @@ use axum::{
     response::Html,
 };
 
-use crate::{AppState, posts::fetcher::PostFetcher};
+use crate::AppState;
 
 // Define an Askama template
 #[derive(Template)]
