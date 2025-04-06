@@ -4,12 +4,17 @@ use axum::{
     response::Html,
 };
 
-use crate::{posts::model::FrontMatter, web::app_state::AppState};
+use crate::{
+    posts::model::{FrontMatter, Post},
+    web::app_state::AppState,
+};
 
 // Define an Askama template
 #[derive(Template)]
 #[template(path = "index.html")]
-struct IndexTemplate {}
+struct IndexTemplate {
+    all_posts: Vec<Post>,
+}
 
 #[derive(Template)]
 #[template(path = "post.html")]
@@ -19,10 +24,21 @@ struct PostTemplate<'a> {
 }
 
 pub async fn index_handler(State(state): State<AppState>) -> Html<String> {
-    let template = IndexTemplate {};
+    let all_posts = state.post_fetcher.list().await;
 
-    let all_posts: Vec<String> = state.post_fetcher.list().await.unwrap();
     tracing::info!("Fetched posts: {:?}", all_posts);
+    let all_posts = match all_posts {
+        Ok(posts) => posts,
+        Err(e) => {
+            tracing::error!("Error fetching posts: {:?}", e);
+            return Html("Error fetching posts".to_string());
+        }
+    };
+
+    let template = IndexTemplate {
+        all_posts: all_posts,
+    };
+
     Html(template.render().unwrap())
 }
 
@@ -37,9 +53,8 @@ pub async fn post_handler(
         .await
         .unwrap();
 
-    let rendered_post = markdown::to_html(&post.content);
     let template = PostTemplate {
-        post_contents: &rendered_post,
+        post_contents: &post.content,
         metadata: post.metadata,
     };
     Html(template.render().unwrap())

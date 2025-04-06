@@ -53,11 +53,17 @@ impl GithubPostFetcher {
 
                 for file in year_files.items {
                     if file.name.ends_with(".md") {
-                        markdown_files.push(format!("{}/{}", year_dir, file.name));
+                        markdown_files.push(format!(
+                            "{}/{}",
+                            year_dir,
+                            file.name.trim_end_matches(".md")
+                        ));
                     }
                 }
             }
         }
+
+        tracing::info!("Fetched posts: {:?}", markdown_files);
 
         Ok(markdown_files)
     }

@@ -10,5 +10,15 @@
 {% block content %}
 <h1>Index</h1>
 <p>Hello, world!</p>
+
+{% for post in all_posts %}
+<div class="post">
+  <h2>{{ post.metadata.title }}</h2>
+  <p>{{ post.content | safe }}</p>
+  <p><a href="post/{{ post.slug }}">Read more</a></p>
+</div>
+{% endfor %}
+
+
 {% call super() %}
 {% endblock %}

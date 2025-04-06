@@ -218,6 +218,7 @@ dependencies = [
  "base64",
  "chrono",
  "fronma",
+ "futures",
  "markdown",
  "octocrab",
  "reqwest",

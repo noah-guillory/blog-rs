@@ -10,6 +10,7 @@ axum = { version = "0.8", features = ["tracing"] }
 base64 = "0.22.1"
 chrono = "0.4.40"
 fronma = "0.2.0"
+futures = "0.3.31"
 markdown = "1.0.0-alpha.23"
 octocrab = "0.44.0"
 reqwest = { version = "0.12", features = ["json"] }

@@ -32,6 +32,24 @@ impl FileSystemPostFetcher {
                         markdown_files.push(name.to_string());
                     }
                 }
+            } else if entry.file_type().await?.is_dir() {
+                let year_dir = entry.file_name();
+                let year_path = format!("{}/{}", self.base_path, year_dir.to_string_lossy());
+                let mut year_entries = fs::read_dir(year_path).await?;
+
+                while let Some(year_entry) = year_entries.next_entry().await? {
+                    if year_entry.file_type().await?.is_file() {
+                        if let Some(name) = year_entry.file_name().to_str() {
+                            if name.ends_with(".md") {
+                                markdown_files.push(format!(
+                                    "{}/{}",
+                                    year_dir.to_string_lossy(),
+                                    name.trim_end_matches(".md")
+                                ));
+                            }
+                        }
+                    }
+                }
             }
         }
 
