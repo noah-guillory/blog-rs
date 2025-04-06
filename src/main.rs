@@ -1,20 +1,16 @@
 use axum::{Router, extract::MatchedPath, http::Request, routing::get};
 use handlers::post_handler;
-use posts::{fetcher::PostFetcher, github::GithubPostFetcher};
 use tokio::net::TcpListener;
 use tower_http::trace::TraceLayer;
 use tracing::info_span;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use web::app_state::setup_app_state;
 
 pub mod handlers;
 pub mod posts;
+pub mod web;
 
 use crate::handlers::index_handler;
-
-#[derive(Clone)]
-struct AppState {
-    post_fetcher: PostFetcher,
-}
 
 #[tokio::main]
 async fn main() {
@@ -34,22 +30,8 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    // Initialize the app state with a post fetcher
-
-    let post_fetcher_type =
-        std::env::var("POST_FETCHER_TYPE").unwrap_or_else(|_| "github".to_string());
-
-    let post_fetcher = match post_fetcher_type.as_str() {
-        "github" => PostFetcher::Github(GithubPostFetcher::new("noah-guillory", "blog-posts")),
-        "filesystem" => PostFetcher::FileSystem(posts::filesystem::FileSystemPostFetcher::new(
-            "/Users/noah/Projects/blog-posts",
-        )),
-        _ => panic!("Invalid POST_FETCHER_TYPE. Use 'github' or 'filesystem'."),
-    };
-
-    let app_state = AppState {
-        post_fetcher: post_fetcher,
-    };
+    // Initialize the app state using the setup function
+    let app_state = setup_app_state();
 
     // Build the application with a route
     let app = Router::new()

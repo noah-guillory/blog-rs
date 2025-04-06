@@ -4,7 +4,7 @@ use axum::{
     response::Html,
 };
 
-use crate::AppState;
+use crate::{posts::model::FrontMatter, web::app_state::AppState};
 
 // Define an Askama template
 #[derive(Template)]
@@ -14,7 +14,8 @@ struct IndexTemplate {}
 #[derive(Template)]
 #[template(path = "post.html")]
 struct PostTemplate<'a> {
-    body: &'a str,
+    post_contents: &'a str,
+    metadata: FrontMatter,
 }
 
 pub async fn index_handler(State(state): State<AppState>) -> Html<String> {
@@ -36,9 +37,10 @@ pub async fn post_handler(
         .await
         .unwrap();
 
-    let rendered_post = markdown::to_html(&post);
+    let rendered_post = markdown::to_html(&post.content);
     let template = PostTemplate {
-        body: &rendered_post,
+        post_contents: &rendered_post,
+        metadata: post.metadata,
     };
     Html(template.render().unwrap())
 }

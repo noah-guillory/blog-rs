@@ -1,5 +1,7 @@
 use anyhow::Result;
 
+use super::model::{FrontMatter, Post};
+
 #[derive(Clone)]
 pub struct GithubPostFetcher {
     pub owner: &'static str,
@@ -23,6 +25,7 @@ impl GithubPostFetcher {
             .await?
             .text()
             .await?;
+
         Ok(contents)
     }
 

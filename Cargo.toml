@@ -4,14 +4,17 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = { version = "0.8", features = ["tracing"] }
+anyhow = "1.0.97"
 askama = "0.13"
+axum = { version = "0.8", features = ["tracing"] }
+base64 = "0.22.1"
+chrono = "0.4.40"
+fronma = "0.2.0"
+markdown = "1.0.0-alpha.23"
+octocrab = "0.44.0"
+reqwest = { version = "0.12", features = ["json"] }
+serde = { version = "1", features = ["derive"] }
 tokio = { version = "1", features = ["full"] }
 tower-http = { version = "0.6.1", features = ["trace"] }
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-octocrab = "0.44.0"
-anyhow = "1.0.97"
-base64 = "0.22.1"
-reqwest = { version = "0.12", features = ["json"] }
-markdown = "1.0.0-alpha.23"

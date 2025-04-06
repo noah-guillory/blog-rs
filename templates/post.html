@@ -1,1 +1,13 @@
-{{ body | safe }}
+{% extends "base.html" %}
+
+{% block title %}{{ metadata.title }}{% endblock %}
+
+{% block head %}
+<style>
+</style>
+{% endblock %}
+
+{% block content %}
+{{ post_contents | safe }}
+{% call super() %}
+{% endblock %}
